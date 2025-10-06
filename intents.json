@@ -1,0 +1,57 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": ["hi", "hello", "hey", "good morning", "good evening", "salam"],
+      "responses": ["Hello! 👋 Welcome to SmartBank Support. How may I assist you today? 😊"]
+    },
+    {
+      "tag": "balance_inquiry",
+      "patterns": ["check balance", "account balance", "show balance", "how much money"],
+      "responses": ["💰 You can check your balance safely in your SmartBank app or via our online portal."]
+    },
+    {
+      "tag": "loan_info",
+      "patterns": ["loan", "apply loan", "loan details", "loan options", "interest rate"],
+      "responses": [
+        "🏦 We offer Personal, Home, and Car loans. Interest rates start from 12.5%. Would you like me to tell you the eligibility criteria?",
+        "You can easily apply for a loan online. Just fill out our loan form on the SmartBank website!"
+      ]
+    },
+    {
+      "tag": "credit_card",
+      "patterns": ["credit card", "apply credit card", "card details", "visa card", "master card"],
+      "responses": ["💳 SmartBank offers Platinum, Gold, and Student credit cards. You can apply online or visit your nearest branch."]
+    },
+    {
+      "tag": "lost_card",
+      "patterns": ["lost card", "block my card", "stolen card", "freeze card"],
+      "responses": ["🚨 I'm sorry to hear that! Please call our helpline at 111-000-123 immediately or use the SmartBank app to block your card instantly."]
+    },
+    {
+      "tag": "opening_account",
+      "patterns": ["open account", "create account", "new account", "how to open account"],
+      "responses": ["✨ You can open a new SmartBank account online! Just provide your CNIC and a selfie for verification."]
+    },
+    {
+      "tag": "customer_support",
+      "patterns": ["talk to agent", "human help", "customer care", "help center"],
+      "responses": ["👩‍💼 Sure! You can chat with a live agent at support.smartbank.com or call 111-000-123."]
+    },
+    {
+      "tag": "thanks",
+      "patterns": ["thanks", "thank you", "shukriya", "ok thanks"],
+      "responses": ["You're most welcome! 😊 Anything else I can assist you with?"]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": ["bye", "goodbye", "see you", "take care"],
+      "responses": ["👋 Goodbye! Thank you for using SmartBank Support. Have a great day! 💫"]
+    },
+    {
+      "tag": "feedback",
+      "patterns": ["feedback", "rate bot", "give review"],
+      "responses": ["⭐ Please rate your chat experience from 1 to 5 below!"]
+    }
+  ]
+}

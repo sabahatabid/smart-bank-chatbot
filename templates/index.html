@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💬 SmartBank Chatbot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="chat-container">
+    <h2>💬 SmartBank AI Assistant</h2>
+    <div id="chat-box"></div>
+
+    <form id="chat-form">
+      <input type="text" id="user-input" placeholder="Type your message..." required>
+      <button type="submit">Send</button>
+    </form>
+
+    <div id="feedback-section">
+      <h3>Rate your experience:</h3>
+      <div class="stars">
+        <button class="star" data-rating="1">⭐</button>
+        <button class="star" data-rating="2">⭐⭐</button>
+        <button class="star" data-rating="3">⭐⭐⭐</button>
+        <button class="star" data-rating="4">⭐⭐⭐⭐</button>
+        <button class="star" data-rating="5">⭐⭐⭐⭐⭐</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatForm = document.getElementById("chat-form");
+    const chatBox = document.getElementById("chat-box");
+    const userInput = document.getElementById("user-input");
+    const stars = document.querySelectorAll(".star");
+
+    chatForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const message = userInput.value;
+      appendMessage("You", message);
+      userInput.value = "";
+
+      const response = await fetch("/get", {
+        method: "POST",
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: "message=" + encodeURIComponent(message)
+      });
+      const data = await response.json();
+      appendMessage("Bot", data.response);
+    });
+
+    stars.forEach(star => {
+      star.addEventListener("click", async () => {
+        const rating = star.dataset.rating;
+        const response = await fetch("/feedback", {
+          method: "POST",
+          headers: {"Content-Type": "application/x-www-form-urlencoded"},
+          body: "rating=" + rating
+        });
+        const data = await response.json();
+        appendMessage("Bot", data.message);
+      });
+    });
+
+    function appendMessage(sender, message) {
+      const div = document.createElement("div");
+      div.className = sender === "You" ? "user-msg" : "bot-msg";
+      div.innerHTML = `<b>${sender}:</b> ${message}`;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>

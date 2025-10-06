@@ -1,0 +1,88 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(120deg, #a8edea, #fed6e3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.chat-container {
+  width: 420px;
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.1);
+  animation: fadeIn 1s ease;
+}
+
+h2 {
+  text-align: center;
+  color: #0077cc;
+  margin-bottom: 10px;
+}
+
+#chat-box {
+  height: 350px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+}
+
+.user-msg {
+  text-align: right;
+  color: #0077cc;
+  margin: 5px 0;
+}
+
+.bot-msg {
+  text-align: left;
+  color: #333;
+  margin: 5px 0;
+}
+
+input {
+  width: 75%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  background: #0077cc;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #005fa3;
+}
+
+#feedback-section {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.star {
+  background: none;
+  border: none;
+  font-size: 25px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.star:hover {
+  transform: scale(1.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
