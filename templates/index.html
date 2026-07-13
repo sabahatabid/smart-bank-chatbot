@@ -5,25 +5,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>💬 SmartBank Chatbot</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <div class="chat-container">
-    <h2>💬 SmartBank AI Assistant</h2>
-    <div id="chat-box"></div>
+  <div class="bg-animation">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
 
-    <form id="chat-form">
-      <input type="text" id="user-input" placeholder="Type your message..." required>
-      <button type="submit">Send</button>
-    </form>
+  <div class="chat-wrapper">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="header-left">
+        <div class="bot-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="header-info">
+          <h2>SmartBank Assistant</h2>
+          <span class="status"><span class="dot"></span>Online</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" title="Clear Chat" id="clear-btn">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+    </div>
 
+    <!-- Chat Box -->
+    <div id="chat-box">
+      <div class="welcome-msg">
+        <div class="bot-msg-wrapper">
+          <div class="bot-avatar-sm"><i class="fas fa-robot"></i></div>
+          <div class="bot-bubble">
+            👋 Hello! I'm your <strong>SmartBank AI Assistant</strong>.<br>
+            How can I help you today?
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Suggestions -->
+    <div class="suggestions" id="suggestions">
+      <button class="suggestion-chip" onclick="sendQuick('Check balance')">💰 Balance</button>
+      <button class="suggestion-chip" onclick="sendQuick('Transfer money')">💸 Transfer</button>
+      <button class="suggestion-chip" onclick="sendQuick('Loan inquiry')">🏦 Loan</button>
+      <button class="suggestion-chip" onclick="sendQuick('Help')">❓ Help</button>
+    </div>
+
+    <!-- Input Area -->
+    <div class="chat-input-area">
+      <form id="chat-form">
+        <div class="input-wrapper">
+          <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off" required>
+          <button type="submit" class="send-btn" id="send-btn">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Feedback Section -->
     <div id="feedback-section">
-      <h3>Rate your experience:</h3>
+      <p><i class="fas fa-star"></i> Rate your experience</p>
       <div class="stars">
-        <button class="star" data-rating="1">⭐</button>
-        <button class="star" data-rating="2">⭐⭐</button>
-        <button class="star" data-rating="3">⭐⭐⭐</button>
-        <button class="star" data-rating="4">⭐⭐⭐⭐</button>
-        <button class="star" data-rating="5">⭐⭐⭐⭐⭐</button>
+        <button class="star" data-rating="1" title="1 Star">⭐</button>
+        <button class="star" data-rating="2" title="2 Stars">⭐⭐</button>
+        <button class="star" data-rating="3" title="3 Stars">⭐⭐⭐</button>
+        <button class="star" data-rating="4" title="4 Stars">⭐⭐⭐⭐</button>
+        <button class="star" data-rating="5" title="5 Stars">⭐⭐⭐⭐⭐</button>
       </div>
     </div>
   </div>
@@ -32,22 +86,109 @@
     const chatForm = document.getElementById("chat-form");
     const chatBox = document.getElementById("chat-box");
     const userInput = document.getElementById("user-input");
+    const sendBtn = document.getElementById("send-btn");
+    const clearBtn = document.getElementById("clear-btn");
     const stars = document.querySelectorAll(".star");
+    const suggestions = document.getElementById("suggestions");
 
+    // Send on form submit
     chatForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const message = userInput.value;
-      appendMessage("You", message);
-      userInput.value = "";
-
-      const response = await fetch("/get", {
-        method: "POST",
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: "message=" + encodeURIComponent(message)
-      });
-      const data = await response.json();
-      appendMessage("Bot", data.response);
+      const message = userInput.value.trim();
+      if (!message) return;
+      await sendMessage(message);
     });
+
+    // Quick suggestion chips
+    function sendQuick(text) {
+      userInput.value = text;
+      chatForm.dispatchEvent(new Event("submit"));
+      suggestions.style.display = "none";
+    }
+
+    // Clear chat
+    clearBtn.addEventListener("click", () => {
+      chatBox.innerHTML = `
+        <div class="welcome-msg">
+          <div class="bot-msg-wrapper">
+            <div class="bot-avatar-sm"><i class="fas fa-robot"></i></div>
+            <div class="bot-bubble">
+              👋 Hello! I'm your <strong>SmartBank AI Assistant</strong>.<br>
+              How can I help you today?
+            </div>
+          </div>
+        </div>`;
+      suggestions.style.display = "flex";
+    });
+
+    async function sendMessage(message) {
+      appendUserMessage(message);
+      userInput.value = "";
+      sendBtn.disabled = true;
+
+      // Show typing indicator
+      const typingId = showTyping();
+
+      try {
+        const response = await fetch("/get", {
+          method: "POST",
+          headers: {"Content-Type": "application/x-www-form-urlencoded"},
+          body: "message=" + encodeURIComponent(message)
+        });
+        const data = await response.json();
+        removeTyping(typingId);
+        appendBotMessage(data.response);
+      } catch (err) {
+        removeTyping(typingId);
+        appendBotMessage("⚠️ Connection error. Please try again.");
+      } finally {
+        sendBtn.disabled = false;
+        userInput.focus();
+      }
+    }
+
+    function appendUserMessage(message) {
+      const div = document.createElement("div");
+      div.className = "user-msg-wrapper";
+      div.innerHTML = `
+        <div class="user-bubble">${escapeHtml(message)}</div>
+        <div class="time">${getTime()}</div>`;
+      chatBox.appendChild(div);
+      scrollBottom();
+    }
+
+    function appendBotMessage(message) {
+      const div = document.createElement("div");
+      div.className = "bot-msg-wrapper";
+      div.innerHTML = `
+        <div class="bot-avatar-sm"><i class="fas fa-robot"></i></div>
+        <div>
+          <div class="bot-bubble">${message}</div>
+          <div class="time">${getTime()}</div>
+        </div>`;
+      chatBox.appendChild(div);
+      scrollBottom();
+    }
+
+    function showTyping() {
+      const id = "typing-" + Date.now();
+      const div = document.createElement("div");
+      div.className = "bot-msg-wrapper";
+      div.id = id;
+      div.innerHTML = `
+        <div class="bot-avatar-sm"><i class="fas fa-robot"></i></div>
+        <div class="bot-bubble typing-bubble">
+          <span></span><span></span><span></span>
+        </div>`;
+      chatBox.appendChild(div);
+      scrollBottom();
+      return id;
+    }
+
+    function removeTyping(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
 
     stars.forEach(star => {
       star.addEventListener("click", async () => {
@@ -58,16 +199,26 @@
           body: "rating=" + rating
         });
         const data = await response.json();
-        appendMessage("Bot", data.message);
+        appendBotMessage(data.message);
+        // Highlight selected stars
+        stars.forEach((s, i) => {
+          s.style.opacity = i < rating ? "1" : "0.3";
+        });
       });
     });
 
-    function appendMessage(sender, message) {
-      const div = document.createElement("div");
-      div.className = sender === "You" ? "user-msg" : "bot-msg";
-      div.innerHTML = `<b>${sender}:</b> ${message}`;
-      chatBox.appendChild(div);
+    function getTime() {
+      return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+
+    function scrollBottom() {
       chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.appendChild(document.createTextNode(text));
+      return div.innerHTML;
     }
   </script>
 </body>
